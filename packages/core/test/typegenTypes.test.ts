@@ -1121,7 +1121,6 @@ describe('typegen types', () => {
 
     const machine = createMachine({
       tsTypes: {} as TypesMeta,
-
       schema: {
         context: {} as {
           foo: string;
@@ -1133,5 +1132,98 @@ describe('typegen types', () => {
       // @ts-expect-error
       machine.initialState.context.val;
     }
+  });
+
+  it('should error on a provided action where there are no inferred actions', () => {
+    interface TypesMeta extends TypegenMeta {
+      eventsCausingActions: never;
+    }
+
+    createMachine(
+      {
+        tsTypes: {} as TypesMeta,
+        schema: {
+          context: {} as {
+            foo: string;
+          }
+        }
+      },
+      {
+        actions: {
+          // @ts-expect-error
+          testAction: () => {}
+        }
+      }
+    );
+  });
+
+  it('should error on a provided delay where there are no inferred delays', () => {
+    interface TypesMeta extends TypegenMeta {
+      eventsCausingDelays: never;
+    }
+
+    createMachine(
+      {
+        tsTypes: {} as TypesMeta,
+        schema: {
+          context: {} as {
+            foo: string;
+          }
+        }
+      },
+      {
+        delays: {
+          // @ts-expect-error
+          testDelay: () => {}
+        }
+      }
+    );
+  });
+
+  it('should error on a provided guard where there are no inferred guards', () => {
+    interface TypesMeta extends TypegenMeta {
+      eventsCausingGuards: never;
+    }
+
+    createMachine(
+      {
+        tsTypes: {} as TypesMeta,
+        schema: {
+          context: {} as {
+            foo: string;
+          }
+        }
+      },
+      {
+        guards: {
+          // @ts-expect-error
+          testGuard: () => {}
+        }
+      }
+    );
+  });
+
+  it('should error on a provided service where there are no declared services', () => {
+    interface TypesMeta extends TypegenMeta {
+      eventsCausingServices: never;
+      invokeSrcNameMap: never;
+    }
+
+    createMachine(
+      {
+        tsTypes: {} as TypesMeta,
+        schema: {
+          context: {} as {
+            foo: string;
+          }
+        }
+      },
+      {
+        services: {
+          // @ts-expect-error
+          testService: () => Promise.resolve(42)
+        }
+      }
+    );
   });
 });
